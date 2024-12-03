@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Personalized Study Assistant",
+    "slug": "personalized-study-assistant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "platforms": ["ios", "android"],
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "bundleIdentifier": "com.yourname.studyassistant"
+    },
+    "android": {
+      "package": "com.yourname.studyassistant",
+      "versionCode": 1
+    },
+    "plugins": [
+      "expo-av"
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, TextInput, Alert, TouchableOpacity, FlatList } from 'react-native';
+import { Audio } from 'expo-av';  // For audio functionality
+
+// Jarvis-like assistant functionality (with speech)
+function Jarvis({ message }) {
+  const [sound, setSound] = useState();
+
+  const playSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require('./assets/sounds/hello.mp3')  // Example sound file, add your own
+    );
+    setSound(sound);
+    await sound.playAsync();
+  };
+
+  useEffect(() => {
+    if (message) playSound();
+  }, [message]);
+
+  return (
+    <View style={{ padding: 10 }}>
+      <Text>{message}</Text>
+    </View>
+  );
+}
+
+// Time table and study progress features
+export default function App() {
+  const [timeTable, setTimeTable] = useState([]);
+  const [studyProgress, setStudyProgress] = useState(0);
+  const [newTask, setNewTask] = useState('');
+  const [message, setMessage] = useState('');
+
+  const addTask = () => {
+    if (!newTask) {
+      Alert.alert('Please enter a task');
+      return;
+    }
+    setTimeTable([...timeTable, newTask]);
+    setNewTask('');
+  };
+
+  const markComplete = (index) => {
+    const updatedTimeTable = [...timeTable];
+    updatedTimeTable.splice(index, 1);
+    setTimeTable(updatedTimeTable);
+    setStudyProgress(studyProgress + 10); // Increase progress by 10% for each task completed
+  };
+
+  const handleInteraction = (text) => {
+    if (text.toLowerCase().includes('study')) {
+      setMessage("Let's get back to studying! Remember, you can do it!");
+    } else if (text.toLowerCase().includes('rest')) {
+      setMessage("Time to take a break! Don't forget to relax.");
+    }
+    // Additional responses based on user input can be added here
+  };
+
+  return (
+    <View style={{ flex: 1, padding: 20 }}>
+      <Jarvis message={message} />
+
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>Study Progress</Text>
+      <Text style={{ fontSize: 18 }}>Your Progress: {studyProgress}%</Text>
+
+      <TextInput
+        placeholder="Add study task"
+        value={newTask}
+        onChangeText={setNewTask}
+        style={{
+          borderWidth: 1, borderRadius: 5, padding: 10, marginVertical: 10, fontSize: 16,
+        }}
+      />
+
+      <Button title="Add Task" onPress={addTask} />
+
+      <FlatList
+        data={timeTable}
+        renderItem={({ item, index }) => (
+          <View style={{ flexDirection: 'row', marginVertical: 5 }}>
+            <Text style={{ flex: 1, fontSize: 16 }}>{item}</Text>
+            <TouchableOpacity onPress={() => markComplete(index)}>
+              <Text style={{ color: 'green' }}>Complete</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+
+      <TextInput
+        placeholder="Talk to your assistant"
+        onChangeText={handleInteraction}
+        style={{
+          borderWidth: 1, borderRadius: 5, padding: 10, marginVertical: 10, fontSize: 16,
+        }}
+      />
+    </View>
+  );
+}
